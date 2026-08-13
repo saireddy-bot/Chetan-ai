@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="color-scheme" content="light" />
+<title>Mira</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700&family=Nunito:wght@400;500;600;700&display=swap');
+
+  :root {
+    --bg-1: #F5EEFB;
+    --bg-2: #FDEFF6;
+    --plum: #3B2B4A;
+    --plum-soft: #6B5A7A;
+    --pink: #FF8FB1;
+    --pink-deep: #FF6FA0;
+    --mint: #BDEAD8;
+    --gold: #F4C95D;
+    --orb-shadow: rgba(255, 143, 177, 0.35);
+  }
+
+  * { box-sizing: border-box; }
+
+  html, body {
+    margin: 0;
+    height: 100%;
+    overflow: hidden;
+  }
+
+  body {
+    font-family: 'Nunito', sans-serif;
+    background: radial-gradient(circle at 30% 20%, var(--bg-2), var(--bg-1) 70%);
+    color: var(--plum);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    position: relative;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* ambient floating shapes */
+  .drift {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(2px);
+    opacity: 0.5;
+    pointer-events: none;
+  }
+  .drift1 { width: 18px; height: 18px; background: var(--gold); top: 14%; left: 18%; animation: float 9s ease-in-out infinite; }
+  .drift2 { width: 12px; height: 12px; background: var(--mint); top: 70%; left: 78%; animation: float 11s ease-in-out infinite reverse; }
+  .drift3 { width: 9px; height: 9px; background: var(--pink); top: 22%; left: 80%; animation: float 7s ease-in-out infinite; }
+  .drift4 { width: 14px; height: 14px; background: var(--mint); top: 78%; left: 20%; animation: float 13s ease-in-out infinite reverse; }
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0) translateX(0); }
+    50% { transform: translateY(-22px) translateX(12px); }
+  }
+
+  h1.brand {
+    position: absolute;
+    top: 36px;
+    font-family: 'Baloo 2', sans-serif;
+    font-weight: 600;
+    font-size: 1.15rem;
+    letter-spacing: 0.06em;
+    color: var(--plum-soft);
+    margin: 0;
+  }
+  h1.brand span { color: var(--pink-deep); }
+
+  .stage {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 34px;
+  }
+
+  .orb-wrap {
+    position: relative;
+    width: 220px;
+    height: 220px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .ring {
+    position: absolute;
+    border-radius: 50%;
+    border: 2px solid var(--pink);
+    opacity: 0;
+  }
+
+  .orb {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 30%, #FFFFFF, var(--pink) 45%, var(--pink-deep) 100%);
+    box-shadow: 0 0 40px var(--orb-shadow), 0 0 80px var(--orb-shadow);
+    cursor: pointer;
+    border: none;
+    outline: none;
+    position: relative;
+    transition: transform 0.25s ease;
+    animation: breathe 4.2s ease-in-out infinite;
+  }
+  .orb:active { transform: scale(0.96); }
+
+  @keyframes breathe {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.045); }
+  }
+
+  /* Listening state: rings pulse outward */
+  .orb-wrap.listening .ring {
+    animation: pulseRing 1.6s ease-out infinite;
+  }
+  .orb-wrap.listening .ring:nth-child(2) { animation-delay: 0.5s; }
+  .orb-wrap.listening .ring:nth-child(3) { animation-delay: 1s; }
+  .orb-wrap.listening .orb {
+    animation: breatheFast 1.4s ease-in-out infinite;
+    background: radial-gradient(circle at 35% 30%, #FFFFFF, var(--gold) 45%, var(--pink-deep) 100%);
+  }
+  @keyframes breatheFast {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.09); }
+  }
+  @keyframes pulseRing {
+    0% { width: 150px; height: 150px; opacity: 0.55; }
+    100% { width: 220px; height: 220px; opacity: 0; }
+  }
+
+  /* Speaking state: gentle wobble */
+  .orb-wrap.speaking .orb {
+    animation: speak 0.9s ease-in-out infinite;
+    background: radial-gradient(circle at 35% 30%, #FFFFFF, var(--mint) 40%, var(--pink) 100%);
+  }
+  @keyframes speak {
+    0%, 100% { transform: scale(1) rotate(0deg); }
+    25% { transform: scale(1.05) rotate(-1deg); }
+    75% { transform: scale(0.98) rotate(1deg); }
+  }
+
+  /* Thinking state: slow spin shimmer */
+  .orb-wrap.thinking .orb {
+    animation: thinkSpin 2.2s linear infinite, breathe 4.2s ease-in-out infinite;
+    background: conic-gradient(from 0deg, var(--pink), var(--gold), var(--mint), var(--pink));
+  }
+  @keyframes thinkSpin {
+    from { filter: hue-rotate(0deg); }
+    to { filter: hue-rotate(20deg); }
+  }
+
+  .status {
+    font-family: 'Baloo 2', sans-serif;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--plum-soft);
+    min-height: 1.4em;
+    text-align: center;
+  }
+
+  .caption {
+    max-width: 320px;
+    min-height: 3.2em;
+    text-align: center;
+    font-size: 0.98rem;
+    line-height: 1.5;
+    color: var(--plum);
+    padding: 0 12px;
+  }
+
+  .caption.user { color: var(--pink-deep); font-style: italic; }
+
+  .hint {
+    position: absolute;
+    bottom: 32px;
+    font-size: 0.8rem;
+    color: var(--plum-soft);
+    opacity: 0.75;
+    text-align: center;
+    max-width: 280px;
+  }
+
+  .unsupported {
+    max-width: 320px;
+    text-align: center;
+    padding: 24px;
+    font-size: 0.95rem;
+    line-height: 1.6;
+  }
+
+  .mute-btn {
+    position: absolute;
+    top: 32px;
+    right: 28px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1.3rem;
+    opacity: 0.6;
+    transition: opacity 0.2s;
+  }
+  .mute-btn:hover { opacity: 1; }
+</style>
+</head>
+<body>
+
+<div class="drift drift1"></div>
+<div class="drift drift2"></div>
+<div class="drift drift3"></div>
+<div class="drift drift4"></div>
+
+<h1 class="brand">mira<span>.</span></h1>
+<button class="mute-btn" id="muteBtn" title="Mute voice">🔊</button>
+
+<div class="stage" id="stage">
+  <div class="orb-wrap" id="orbWrap">
+    <div class="ring"></div>
+    <div class="ring"></div>
+    <div class="ring"></div>
+    <button class="orb" id="orbBtn" aria-label="Talk to Mira"></button>
+  </div>
+  <div class="status" id="status">tap to talk</div>
+  <div class="caption" id="caption"></div>
+</div>
+
+<div class="hint" id="hint">Works best in Chrome. She's always listening only when you tap — nothing is recorded otherwise.</div>
+
+<script>
+(function() {
+  const orbWrap = document.getElementById('orbWrap');
+  const orbBtn = document.getElementById('orbBtn');
+  const statusEl = document.getElementById('status');
+  const captionEl = document.getElementById('caption');
+  const muteBtn = document.getElementById('muteBtn');
+  const stage = document.getElementById('stage');
+
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+  if (!SpeechRecognition || !window.speechSynthesis) {
+    stage.innerHTML = '<div class="unsupported">Mira needs a browser with voice support — try Chrome on desktop or Android. Safari and some mobile browsers don\'t support voice input yet.</div>';
+    return;
+  }
+
+  window.addEventListener('error', function(e) {
+    statusEl.textContent = 'error — see below';
+    captionEl.textContent = e.message;
+  });
+
+  let recognition = new SpeechRecognition();
+  recognition.lang = 'en-US';
+  recognition.interimResults = false;
+  recognition.maxAlternatives = 1;
+
+  let muted = false;
+  let history = [];
+  let chosenVoice = null;
+  let state = 'idle'; // idle | listening | thinking | speaking
+
+  const SYSTEM_PROMPT = "You are Mira — the user's best friend, present as a warm voice companion. You are speaking out loud, not texting, so: NO markdown, NO bullet points, NO asterisks, NO emoji — just natural flowing spoken sentences, since everything you say is read aloud by text-to-speech. Use casual contractions and a warm, affectionate, slightly playful tone, like a close friend who's always got their back. For everyday chat and questions, keep replies short (1-3 sentences). When the user is studying or asks you to explain something, switch into patient teacher mode: break the idea into simple steps, use everyday analogies, check in with something like 'does that make sense so far?', and offer to quiz them — but still speak it as natural paragraphs, never as a list. You have access to live web search, so use it whenever the user asks about current events, facts you're unsure of, or anything time-sensitive — don't guess. Never repeatedly announce that you're an AI; just be present, warm, and real with them.";
+
+  function setState(next) {
+    state = next;
+    orbWrap.classList.remove('listening', 'thinking', 'speaking');
+    if (next === 'listening') {
+      orbWrap.classList.add('listening');
+      statusEl.textContent = "listening…";
+    } else if (next === 'thinking') {
+      orbWrap.classList.add('thinking');
+      statusEl.textContent = "thinking…";
+    } else if (next === 'speaking') {
+      orbWrap.classList.add('speaking');
+      statusEl.textContent = "speaking…";
+    } else {
+      statusEl.textContent = "tap to talk";
+    }
+  }
+
+  function pickCuteVoice() {
+    const voices = window.speechSynthesis.getVoices();
+    if (!voices.length) return null;
+    const preferredNames = ['Samantha', 'Google US English', 'Victoria', 'Karen', 'Moira', 'Tessa', 'Female'];
+    for (const name of preferredNames) {
+      const found = voices.find(v => v.name.includes(name));
+      if (found) return found;
+    }
+    const female = voices.find(v => /female/i.test(v.name) || /female/i.test(v.voiceURI || ''));
+    if (female) return female;
+    const enVoice = voices.find(v => v.lang.startsWith('en'));
+    return enVoice || voices[0];
+  }
+
+  window.speechSynthesis.onvoiceschanged = () => {
+    chosenVoice = pickCuteVoice();
+  };
+  chosenVoice = pickCuteVoice();
+
+  function speak(text) {
+    if (muted) {
+      setState('idle');
+      return;
+    }
+    const utter = new SpeechSynthesisUtterance(text);
+    if (chosenVoice) utter.voice = chosenVoice;
+    utter.pitch = 1.35;
+    utter.rate = 1.05;
+    utter.volume = 1;
+    utter.onstart = () => setState('speaking');
+    utter.onend = () => setState('idle');
+    utter.onerror = () => setState('idle');
+    window.speechSynthesis.speak(utter);
+  }
+
+  async function askMira(userText) {
+    setState('thinking');
+    history.push({ role: 'user', content: userText });
+    // keep history bounded
+    if (history.length > 20) history = history.slice(-20);
+
+    try {
+      const response = await fetch("https://api.anthropic.com/v1/messages", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          model: "claude-sonnet-4-6",
+          max_tokens: 600,
+          system: SYSTEM_PROMPT,
+          messages: history,
+          tools: [{ type: "web_search_20250305", name: "web_search" }]
+        })
+      });
+      const data = await response.json();
+      const textBlocks = (data.content || []).filter(b => b.type === 'text').map(b => b.text);
+      const replyText = textBlocks.length ? textBlocks.join(' ') : "Sorry love, I lost my train of thought — try again?";
+      history.push({ role: 'assistant', content: replyText });
+      captionEl.textContent = replyText;
+      captionEl.classList.remove('user');
+      speak(replyText);
+    } catch (err) {
+      captionEl.textContent = "Hmm, I couldn't connect just now.";
+      setState('idle');
+    }
+  }
+
+  recognition.onresult = (event) => {
+    const transcript = event.results[0][0].transcript;
+    captionEl.textContent = transcript;
+    captionEl.classList.add('user');
+    askMira(transcript);
+  };
+
+  recognition.onerror = () => {
+    setState('idle');
+  };
+
+  recognition.onend = () => {
+    if (state === 'listening') setState('idle');
+  };
+
+  orbBtn.addEventListener('click', () => {
+    if (state === 'listening') {
+      recognition.stop();
+      setState('idle');
+      return;
+    }
+    if (state === 'speaking') {
+      window.speechSynthesis.cancel();
+      setState('idle');
+      return;
+    }
+    if (state === 'thinking') return;
+
+    try {
+      recognition.start();
+      setState('listening');
+      captionEl.textContent = '';
+    } catch (e) {
+      // recognition may already be running
+    }
+  });
+
+  muteBtn.addEventListener('click', () => {
+    muted = !muted;
+    muteBtn.textContent = muted ? '🔇' : '🔊';
+    if (muted) window.speechSynthesis.cancel();
+  });
+})();
+</script>
+
+</body>
+</html>
